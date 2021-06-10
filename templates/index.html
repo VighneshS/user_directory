@@ -1,18 +1,17 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-            integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js"
+            integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+            integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
             crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
-            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
             crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
-            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-            crossorigin="anonymous"></script>
-    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jquery.templates/beta1/jquery.tmpl.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css?family=Poppins:400,800" rel="stylesheet"/>
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
@@ -124,22 +123,26 @@
                 </button>
                 <h4 class="modal-title" id="editModalLabel">Update User</h4>
             </div>
-            <div class="modal-body">
-                <form role="form">
+            <form role="form" method="post" action="/update">
+                <div class="modal-body">
+                    <div class="form-group" style="display: none">
+                        <label for="beforeUpdateName" class="control-label">Before update Name:</label>
+                        <input type="text" class="form-control disabled" name="targetName" id="beforeUpdateName">
+                    </div>
                     <div class="form-group">
                         <label for="editName" class="control-label">Name:</label>
-                        <input type="text" class="form-control" id="editName">
+                        <input type="text" name="name" class="form-control" id="editName">
                     </div>
                     <div class="form-group">
                         <label for="editState" class="control-label">State:</label>
-                        <input class="form-control" id="editState"/>
+                        <input class="form-control" name="state" id="editState"/>
                     </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" id="btnUpdate" class="btn btn-primary">Update</button>
-            </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" id="btnUpdate" class="btn btn-primary">Update</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -153,7 +156,13 @@
             },
             type: 'POST',
             success: function (res) {
-                console.log(res);
+                // Parse the received JSON string
+                var data = JSON.parse(res);
+
+                //Populate the Pop up
+                $('#beforeUpdateName').val(data[0][0]);
+                $('#editName').val(data[0][0]);
+                $('#editState').val(data[0][1]);
             },
             error: function (error) {
                 console.log(error);

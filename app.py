@@ -51,7 +51,7 @@ def fetchAllData():
     return people
 
 
-def fetchBasedOnNameAndState(searchParams):
+def fetchBasedOnSearchQuery(searchParams):
     SELECT_FROM_PEOPLE_BASED_ON_NAME_AND_STATE_QUERY = " SELECT * from people "
     getConnection()
     cursor = cnx.cursor()
@@ -73,6 +73,35 @@ def fetchBasedOnNameAndState(searchParams):
     return people
 
 
+def saveBasedOnName(editParams):
+    UPDATE_PEOPLE_BASED_ON_NAME_QUERY = " UPDATE people "
+    getConnection()
+    cursor = cnx.cursor()
+    if editParams:
+        UPDATE_PEOPLE_BASED_ON_NAME_QUERY += " SET "
+    else:
+        return fetchAllData()
+    count = 0
+    for key in editParams:
+        if key != 'targetName':
+            if count > 0:
+                UPDATE_PEOPLE_BASED_ON_NAME_QUERY += ' , '
+            UPDATE_PEOPLE_BASED_ON_NAME_QUERY += key + " = " + "'" + editParams[key] + "'"
+            count += 1
+    UPDATE_PEOPLE_BASED_ON_NAME_QUERY += " where Name = '" + editParams['targetName'] + "' "
+    print(UPDATE_PEOPLE_BASED_ON_NAME_QUERY)
+    try:
+        # Execute the SQL command
+        cursor.execute(UPDATE_PEOPLE_BASED_ON_NAME_QUERY)
+
+        # Commit your changes in the database
+        cnx.commit()
+    except:
+        # Rollback in case there is any error
+        cnx.rollback()
+    cnx.close()
+
+
 @app.route('/', methods=['GET', 'POST'])
 def search():
     global data
@@ -92,7 +121,7 @@ def search():
             searchParams.add('Telnum', request.form['telnum'])
         if request.form['keywords']:
             searchParams.add('Keywords', request.form['keywords'])
-        data = fetchBasedOnNameAndState(searchParams)
+        data = fetchBasedOnSearchQuery(searchParams)
     else:
         data = fetchAllData()
     return render_template('index.html', data=data)
@@ -104,7 +133,20 @@ def getUserByName():
     searchParams: SearchParams = SearchParams()
     if request.form['name']:
         searchParams.add('Name', request.form['name'])
-    return json.dumps(fetchBasedOnNameAndState(searchParams))
+    return json.dumps(fetchBasedOnSearchQuery(searchParams))
+
+
+@app.route('/update', methods=['POST'])
+def updateUserByName():
+    global data
+    editParams: SearchParams = SearchParams()
+    if request.form['name']:
+        editParams.add('targetName', request.form['targetName'])
+        editParams.add('Name', request.form['name'])
+        editParams.add('State', request.form['state'])
+        saveBasedOnName(editParams)
+        data = fetchAllData()
+    return render_template('index.html', data=data)
 
 
 @app.route('/status')
