@@ -1,3 +1,5 @@
+import json
+
 from flask import Flask, render_template, request
 import os
 import mysql.connector
@@ -11,6 +13,17 @@ username = os.environ['UD_DB_USERNAME']
 password = os.environ['UD_DB_PASSWORD']
 
 SELECT_ALL_FROM_PEOPLE_QUERY = "SELECT * FROM people"
+
+
+class SearchParams(dict):
+
+    # __init__ function
+    def __init__(self):
+        self = dict()
+
+    # Function to add key:value
+    def add(self, key, value):
+        self[key] = value
 
 
 def getConnection():
@@ -38,18 +51,21 @@ def fetchAllData():
     return people
 
 
-def fetchBasedOnNameAndState(name, state):
+def fetchBasedOnNameAndState(searchParams):
     SELECT_FROM_PEOPLE_BASED_ON_NAME_AND_STATE_QUERY = " SELECT * from people "
     getConnection()
     cursor = cnx.cursor()
-    if name or state:
+    if searchParams:
         SELECT_FROM_PEOPLE_BASED_ON_NAME_AND_STATE_QUERY += " Where "
-    if name:
-        SELECT_FROM_PEOPLE_BASED_ON_NAME_AND_STATE_QUERY += " Name LIKE " + "'" + name + "'"
-    if state and name:
-        SELECT_FROM_PEOPLE_BASED_ON_NAME_AND_STATE_QUERY += " OR "
-    if state:
-        SELECT_FROM_PEOPLE_BASED_ON_NAME_AND_STATE_QUERY += " State LIKE " + "'" + state + "'"
+    else:
+        return fetchAllData()
+    count = 0
+    for key in searchParams:
+        if count > 0:
+            SELECT_FROM_PEOPLE_BASED_ON_NAME_AND_STATE_QUERY += " OR "
+        SELECT_FROM_PEOPLE_BASED_ON_NAME_AND_STATE_QUERY += " " + key + " LIKE " + "'%" + searchParams[key] + "%'"
+        count += 1
+
     print(SELECT_FROM_PEOPLE_BASED_ON_NAME_AND_STATE_QUERY)
     cursor.execute(SELECT_FROM_PEOPLE_BASED_ON_NAME_AND_STATE_QUERY)
     people = cursor.fetchall()
@@ -60,17 +76,35 @@ def fetchBasedOnNameAndState(name, state):
 @app.route('/', methods=['GET', 'POST'])
 def search():
     global data
-    print(request.method)
+    searchParams: SearchParams = SearchParams()
     if request.method == "POST":
-        print('Here')
-        name = request.form['name']
-        state = request.form['state']
-        print(name, state)
-        data = fetchBasedOnNameAndState(name, state)
+        if request.form['name']:
+            searchParams.add('Name', request.form['name'])
+        if request.form['state']:
+            searchParams.add('State', request.form['state'])
+        if request.form['salary']:
+            searchParams.add('Salary', request.form['salary'])
+        if request.form['grade']:
+            searchParams.add('Grade', request.form['grade'])
+        if request.form['room']:
+            searchParams.add('Room', request.form['room'])
+        if request.form['telnum']:
+            searchParams.add('Telnum', request.form['telnum'])
+        if request.form['keywords']:
+            searchParams.add('Keywords', request.form['keywords'])
+        data = fetchBasedOnNameAndState(searchParams)
     else:
-        print('Get')
         data = fetchAllData()
     return render_template('index.html', data=data)
+
+
+@app.route('/getUserByName', methods=['POST'])
+def getUserByName():
+    global data
+    searchParams: SearchParams = SearchParams()
+    if request.form['name']:
+        searchParams.add('Name', request.form['name'])
+    return json.dumps(fetchBasedOnNameAndState(searchParams))
 
 
 @app.route('/status')

@@ -3,6 +3,16 @@
 <head>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+            integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jquery.templates/beta1/jquery.tmpl.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css?family=Poppins:400,800" rel="stylesheet"/>
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
@@ -13,17 +23,58 @@
 <h1>Name: Vighnesh Sivaraman</h1>
 <h1>UTA ID: 1001878596</h1>
 <form method="post" action="">
-    <div class="form-group">
-        <label for="inputName">Name</label>
-        <input type="text" class="form-control" id="inputName" aria-describedby="nameHelp"
-               name="name" placeholder="Enter Name">
-        <small id="nameHelp" class="form-text text-muted">Input the name you want to search</small>
+    <div class="row">
+        <div class="form-group col-md-6">
+            <label for="inputName">Name</label>
+            <input type="text" class="form-control" id="inputName" aria-describedby="nameHelp"
+                   name="name" placeholder="Name">
+            <small id="nameHelp" class="form-text text-muted">Input the Name you want to search</small>
+        </div>
+        <div class="form-group col-md-6">
+            <label for="inputState">State</label>
+            <input type="text" class="form-control" id="inputState" aria-describedby="stateHelp"
+                   name="state" placeholder="State">
+            <small id="stateHelp" class="form-text text-muted">Input the State you want to search</small>
+        </div>
     </div>
-    <div class="form-group">
-        <label for="inputState">State</label>
-        <input type="text" class="form-control" id="inputState" name="state" placeholder="State">
+    <div class="row">
+        <div class="form-group col-md-6">
+            <label for="inputSalary">Salary</label>
+            <input type="number" step="1" min="0" class="form-control" aria-describedby="salaryHelp"
+                   id="inputState" name="salary" placeholder="Salary">
+            <small id="salaryHelp" class="form-text text-muted">Input the salary you want to search</small>
+        </div>
+        <div class="form-group col-md-6">
+            <label for="inputGrade">Grade</label>
+            <input type="number" step="1" min="0" class="form-control" aria-describedby="gradeHelp"
+                   id="inputGrade" name="grade" placeholder="Grade">
+            <small id="gradeHelp" class="form-text text-muted">Input the grade you want to search</small>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group col-md-6">
+            <label for="inputRoom">Room</label>
+            <input type="number" step="1" min="0" class="form-control" aria-describedby="roomHelp"
+                   id="inputRoom" name="room" placeholder="Room">
+            <small id="roomHelp" class="form-text text-muted">Input the room you want to search</small>
+        </div>
+        <div class="form-group col-md-6">
+            <label for="inputTelnum">Telnum</label>
+            <input type="number" step="1" min="0" class="form-control" aria-describedby="telnumHelp"
+                   id="inputTelnum" name="telnum" placeholder="Telnum">
+            <small id="telnumHelp" class="form-text text-muted">Input the telnum you want to search</small>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group col-md-6">
+            <label for="inputKeywords">Keywords</label>
+            <input type="text" class="form-control" aria-describedby="keywordsHelp"
+                   id="inputKeywords" name="keywords" placeholder="Keywords">
+            <small id="keywordsHelp" class="form-text text-muted">Input the keywords you want to search</small>
+        </div>
     </div>
     <button type="submit" class="btn btn-primary">Search</button>
+    <br><br><br><br>
     <table class="table table-striped">
         <thead class="thead-light">
         <tr>
@@ -35,6 +86,7 @@
             <th>Telnum</th>
             <th>Picture</th>
             <th>Keywords</th>
+            <th>Action</th>
         </tr>
         </thead>
         <tbody>
@@ -55,10 +107,58 @@
                     <td></td>
                 {% endif %}
                 <td>{{ row[7] }}</td>
+                <td><a data-id={{ row[0] }} onclick="edit(this)" data-toggle="modal" data-target="#editModal"><span
+                        class="fas fa-edit"></span></a></td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
 </form>
+
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                        class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title" id="editModalLabel">Update User</h4>
+            </div>
+            <div class="modal-body">
+                <form role="form">
+                    <div class="form-group">
+                        <label for="editName" class="control-label">Name:</label>
+                        <input type="text" class="form-control" id="editName">
+                    </div>
+                    <div class="form-group">
+                        <label for="editState" class="control-label">State:</label>
+                        <input class="form-control" id="editState"/>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" id="btnUpdate" class="btn btn-primary">Update</button>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
+<script>
+    function edit(elm) {
+        $.ajax({
+            url: '/getUserByName',
+            data: {
+                name: $(elm).attr('data-id')
+            },
+            type: 'POST',
+            success: function (res) {
+                console.log(res);
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    }
+</script>
 </html>
