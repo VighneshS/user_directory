@@ -146,8 +146,8 @@ def findByRoom():
             searchParams.add('roomFrom', request.form['roomFrom'])
         if request.form['roomTo']:
             searchParams.add('roomTo', request.form['roomTo'])
-            data = fetchBasedOnRoomQuery(searchParams)
-    return render_template('findByRoom.html', data=data)
+        data = fetchBasedOnSearchQuery(searchParams)
+    return render_template('find.html', data=data)
 
 
 @app.route('/getUserByName', methods=['POST'])
