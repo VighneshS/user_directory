@@ -1,6 +1,6 @@
 import json
 
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect
 import os
 import mysql.connector
 from mysql.connector import errorcode
@@ -145,8 +145,7 @@ def updateUserByName():
         editParams.add('Name', request.form['name'])
         editParams.add('State', request.form['state'])
         saveBasedOnName(editParams)
-        data = fetchAllData()
-    return render_template('index.html', data=data)
+    return redirect('/')
 
 
 @app.route('/status')
