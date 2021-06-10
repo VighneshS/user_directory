@@ -42,6 +42,8 @@
             <thead class="thead-light">
             <tr>
                 <th>Picture</th>
+                <th>Picture Name</th>
+                <th>Captions</th>
             </tr>
             </thead>
             <tbody>
@@ -55,6 +57,8 @@
                     {% else %}
                         <td><h2>No Picture Found</h2></td>
                     {% endif %}
+                    <td>{{ row[4] }}</td>
+                    <td>{{ row[5] }}</td>
                 </tr>
             {% endfor %}
             </tbody>
