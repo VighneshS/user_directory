@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js"
+            integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+            integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+            crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Poppins:400,800" rel="stylesheet"/>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <title>User Directory</title>
+</head>
+<body>
+<h1 style="margin-left: 40%">User Directory</h1>
+<h1>UTA ID: 1001878596</h1>
+<h1>Name: Vighnesh Sivaraman</h1>
+<img src="https://contactdirectorystorage.blob.core.windows.net/directory/s.jpg">
+<form method="post" action="">
+    <div class="row">
+        <div class="form-group col-md-6">
+            <label for="inputName">ID</label>
+            <input type="text" class="form-control" id="inputName" aria-describedby="nameHelp"
+                   name="id" placeholder="ID">
+            <small id="nameHelp" class="form-text text-muted">Input the Name you want to search</small>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group col-md-6">
+            <label for="inputState">Room From</label>
+            <input type="number" step="1" min="0" class="form-control" id="inputState" aria-describedby="stateHelp"
+                   name="roomFrom" placeholder="Room From">
+            <small id="stateHelp" class="form-text text-muted">Input the Starting room number you want to search</small>
+        </div>
+        <div class="form-group col-md-6">
+            <label for="inputState">Room To</label>
+            <input type="number" step="1" min="0" class="form-control" id="inputState" aria-describedby="stateHelp"
+                   name="roomTo" placeholder="Room To">
+            <small id="stateHelp" class="form-text text-muted">Input the Ending room number you want to search</small>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Search</button>
+    <br><br><br><br>
+    {% if data %}
+        <table class="table table-striped">
+            <thead class="thead-light">
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Room</th>
+                <th>State</th>
+                <th>Picture</th>
+                <th>Caption</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for row in data %}
+                <tr>
+                    <td>{{ row[2] }}</td>
+                    <td>{{ row[0] }}</td>
+                    <td>{{ row[1] }}</td>
+                    <td>{{ row[3] }}</td>
+                    {% if row[4] %}
+                        <td><img style="height: 100px;"
+                                 src="{{ "https://contactdirectorystorage.blob.core.windows.net/directory/" ~ row[4] }}"
+                                 alt="{{ row[6] }}">
+                        </td>
+                    {% else %}
+                        <td></td>
+                    {% endif %}
+                    <td>{{ row[5] }}</td>
+                    <td>
+                        <a data-id={{ row[0] }} onclick="edit(this)" data-toggle="modal" data-target="#editModal"><span
+                                class="fas fa-edit"></span></a>
+                        <a data-id={{ row[0] }} onclick="deleteUser(this)" data-toggle="modal"
+                           data-target="#deleteModal"><span
+                                class="fas fa-trash"></span></a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <h2>No Data Found...</h2>
+    {% endif %}
+</form>
+
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                        class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title" id="editModalLabel">Update User</h4>
+            </div>
+            <form role="form" method="post" action="/update">
+                <div class="modal-body">
+                    <div class="form-group" style="display: none">
+                        <label for="beforeUpdateName" class="control-label">Before update Name:</label>
+                        <input type="text" class="form-control disabled" name="targetName" id="beforeUpdateName">
+                    </div>
+                    <div class="form-group">
+                        <label for="editName" class="control-label">Name:</label>
+                        <input type="text" name="name" class="form-control" id="editName">
+                    </div>
+                    <div class="form-group">
+                        <label for="editState" class="control-label">State:</label>
+                        <input class="form-control" name="state" id="editState"/>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" id="btnUpdate" class="btn btn-primary">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    function edit(elm) {
+        $.ajax({
+            url: '/getUserByName',
+            data: {
+                name: $(elm).attr('data-id')
+            },
+            type: 'POST',
+            success: function (res) {
+                // Parse the received JSON string
+                var data = JSON.parse(res);
+
+                //Populate the Pop up
+                $('#beforeUpdateName').val(data[0][0]);
+                $('#editName').val(data[0][0]);
+                $('#editState').val(data[0][1]);
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    }
+
+    function deleteUser(elm) {
+        $.ajax({
+            url: '/getUserByName',
+            data: {
+                name: $(elm).attr('data-id')
+            },
+            type: 'POST',
+            success: function (res) {
+                // Parse the received JSON string
+                var data = JSON.parse(res);
+
+                //Populate the Pop up
+                $('#beforeUpdateName').val(data[0][0]);
+                $('#editName').val(data[0][0]);
+                $('#editState').val(data[0][1]);
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    }
+</script>
+</html>

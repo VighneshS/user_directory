@@ -52,20 +52,21 @@ def fetchAllData():
 
 
 def fetchBasedOnSearchQuery(searchParams):
-    SELECT_FROM_PEOPLE_BASED_ON_NAME_AND_STATE_QUERY = " SELECT * from people "
+    SELECT_FROM_PEOPLE_BASED_ON_NAME_AND_STATE_QUERY = " SELECT * from people where id = '" + searchParams['id'] + "'"
     getConnection()
     cursor = cnx.cursor()
-    if searchParams:
-        SELECT_FROM_PEOPLE_BASED_ON_NAME_AND_STATE_QUERY += " Where "
-    else:
-        return fetchAllData()
-    count = 0
-    for key in searchParams:
-        if count > 0:
-            SELECT_FROM_PEOPLE_BASED_ON_NAME_AND_STATE_QUERY += " OR "
-        SELECT_FROM_PEOPLE_BASED_ON_NAME_AND_STATE_QUERY += " " + key + " LIKE " + "'%" + searchParams[key] + "%'"
-        count += 1
+    print(SELECT_FROM_PEOPLE_BASED_ON_NAME_AND_STATE_QUERY)
+    cursor.execute(SELECT_FROM_PEOPLE_BASED_ON_NAME_AND_STATE_QUERY)
+    people = cursor.fetchall()
+    cnx.close()
+    return people
 
+
+def fetchBasedOnRoomQuery(searchParams):
+    SELECT_FROM_PEOPLE_BASED_ON_NAME_AND_STATE_QUERY = " SELECT * from people where room between " + searchParams[
+        'roomFrom'] + " AND " + searchParams['roomTo']
+    getConnection()
+    cursor = cnx.cursor()
     print(SELECT_FROM_PEOPLE_BASED_ON_NAME_AND_STATE_QUERY)
     cursor.execute(SELECT_FROM_PEOPLE_BASED_ON_NAME_AND_STATE_QUERY)
     people = cursor.fetchall()
@@ -103,7 +104,7 @@ def saveBasedOnName(editParams):
 
 
 def deleteBasedOnName(targetName: str):
-    DELETE_PEOPLE_BASED_ON_NAME_QUERY = " DELETE people WHERE Name='"+targetName+"' "
+    DELETE_PEOPLE_BASED_ON_NAME_QUERY = " DELETE people WHERE Name='" + targetName + "' "
     getConnection()
     cursor = cnx.cursor()
     try:
@@ -120,27 +121,33 @@ def deleteBasedOnName(targetName: str):
 
 @app.route('/', methods=['GET', 'POST'])
 def search():
+    return render_template('index.html')
+
+
+@app.route('/find', methods=['GET', 'POST'])
+def find():
     global data
+    data = []
     searchParams: SearchParams = SearchParams()
     if request.method == "POST":
-        if request.form['name']:
-            searchParams.add('Name', request.form['name'])
-        if request.form['state']:
-            searchParams.add('State', request.form['state'])
-        if request.form['salary']:
-            searchParams.add('Salary', request.form['salary'])
-        if request.form['grade']:
-            searchParams.add('Grade', request.form['grade'])
-        if request.form['room']:
-            searchParams.add('Room', request.form['room'])
-        if request.form['telnum']:
-            searchParams.add('Telnum', request.form['telnum'])
-        if request.form['keywords']:
-            searchParams.add('Keywords', request.form['keywords'])
+        if request.form['id']:
+            searchParams.add('id', request.form['id'])
+            data = fetchBasedOnSearchQuery(searchParams)
+    return render_template('find.html', data=data)
+
+
+@app.route('/findByRoom', methods=['GET', 'POST'])
+def findByRoom():
+    global data
+    data = []
+    searchParams: SearchParams = SearchParams()
+    if request.method == "POST":
+        if request.form['roomFrom']:
+            searchParams.add('roomFrom', request.form['roomFrom'])
+        if request.form['roomTo']:
+            searchParams.add('roomTo', request.form['roomTo'])
         data = fetchBasedOnSearchQuery(searchParams)
-    else:
-        data = fetchAllData()
-    return render_template('index.html', data=data)
+    return render_template('find.html', data=data)
 
 
 @app.route('/getUserByName', methods=['POST'])
