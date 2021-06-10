@@ -102,22 +102,6 @@ def saveBasedOnName(editParams):
     cnx.close()
 
 
-def deleteBasedOnName(targetName: str):
-    DELETE_PEOPLE_BASED_ON_NAME_QUERY = " DELETE people WHERE Name='"+targetName+"' "
-    getConnection()
-    cursor = cnx.cursor()
-    try:
-        # Execute the SQL command
-        cursor.execute(DELETE_PEOPLE_BASED_ON_NAME_QUERY)
-
-        # Commit your changes in the database
-        cnx.commit()
-    except:
-        # Rollback in case there is any error
-        cnx.rollback()
-    cnx.close()
-
-
 @app.route('/', methods=['GET', 'POST'])
 def search():
     global data
@@ -161,13 +145,6 @@ def updateUserByName():
         editParams.add('Name', request.form['name'])
         editParams.add('State', request.form['state'])
         saveBasedOnName(editParams)
-    return redirect('/')
-
-
-@app.route('/delete', methods=['DELETE'])
-def deleteUserByName():
-    if request.form['targetName']:
-        deleteBasedOnName(request.form['targetName'])
     return redirect('/')
 
 

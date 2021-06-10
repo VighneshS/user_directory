@@ -19,9 +19,8 @@
 </head>
 <body>
 <h1 style="margin-left: 40%">User Directory</h1>
-<h1>UTA ID: 1001878596</h1>
 <h1>Name: Vighnesh Sivaraman</h1>
-<img src="https://contactdirectorystorage.blob.core.windows.net/directory/s.jpg">
+<h1>UTA ID: 1001878596</h1>
 <form method="post" action="">
     <div class="row">
         <div class="form-group col-md-6">
@@ -78,37 +77,37 @@
     <table class="table table-striped">
         <thead class="thead-light">
         <tr>
-            <th>ID</th>
             <th>Name</th>
-            <th>Room</th>
             <th>State</th>
+            <th>Salary</th>
+            <th>Grade</th>
+            <th>Room</th>
+            <th>Telnum</th>
             <th>Picture</th>
-            <th>Caption</th>
+            <th>Keywords</th>
             <th>Action</th>
         </tr>
         </thead>
         <tbody>
         {% for row in data %}
             <tr>
-                <td>{{ row[2] }}</td>
                 <td>{{ row[0] }}</td>
                 <td>{{ row[1] }}</td>
+                <td>{{ row[2] }}</td>
                 <td>{{ row[3] }}</td>
-                {% if row[4] %}
+                <td>{{ row[4] }}</td>
+                <td>{{ row[5] }}</td>
+                {% if row[6] %}
                     <td><img style="height: 100px;"
-                             src="{{ "https://contactdirectorystorage.blob.core.windows.net/directory/" ~ row[4] }}"
+                             src="{{ "https://contactdirectorystorage.blob.core.windows.net/directory/" ~ row[6] }}"
                              alt="{{ row[6] }}">
                     </td>
                 {% else %}
                     <td></td>
                 {% endif %}
-                <td>{{ row[5] }}</td>
-                <td>
-                    <a data-id={{ row[0] }} onclick="edit(this)" data-toggle="modal" data-target="#editModal"><span
-                        class="fas fa-edit"></span></a>
-                    <a data-id={{ row[0] }} onclick="deleteUser(this)" data-toggle="modal" data-target="#deleteModal"><span
-                        class="fas fa-trash"></span></a>
-                </td>
+                <td>{{ row[7] }}</td>
+                <td><a data-id={{ row[0] }} onclick="edit(this)" data-toggle="modal" data-target="#editModal"><span
+                        class="fas fa-edit"></span></a></td>
             </tr>
         {% endfor %}
         </tbody>
@@ -150,28 +149,6 @@
 </body>
 <script>
     function edit(elm) {
-        $.ajax({
-            url: '/getUserByName',
-            data: {
-                name: $(elm).attr('data-id')
-            },
-            type: 'POST',
-            success: function (res) {
-                // Parse the received JSON string
-                var data = JSON.parse(res);
-
-                //Populate the Pop up
-                $('#beforeUpdateName').val(data[0][0]);
-                $('#editName').val(data[0][0]);
-                $('#editState').val(data[0][1]);
-            },
-            error: function (error) {
-                console.log(error);
-            }
-        });
-    }
-
-    function deleteUser(elm) {
         $.ajax({
             url: '/getUserByName',
             data: {
