@@ -73,7 +73,7 @@ def fetchBasedOnSearchQuery(searchParams):
     return people
 
 
-def saveBasedOnName(editParams):
+def saveBasedOnName(editParams, pictureFile):
     UPDATE_PEOPLE_BASED_ON_NAME_QUERY = " UPDATE people "
     getConnection()
     cursor = cnx.cursor()
@@ -93,6 +93,22 @@ def saveBasedOnName(editParams):
     try:
         # Execute the SQL command
         cursor.execute(UPDATE_PEOPLE_BASED_ON_NAME_QUERY)
+
+        # Commit your changes in the database
+        cnx.commit()
+    except:
+        # Rollback in case there is any error
+        cnx.rollback()
+    cnx.close()
+
+
+def deleteBasedOnName(targetName):
+    DELETE_PEOPLE_BASED_ON_NAME_QUERY = " Delete from people where Name='" + targetName + "'"
+    getConnection()
+    cursor = cnx.cursor()
+    try:
+        # Execute the SQL command
+        cursor.execute(DELETE_PEOPLE_BASED_ON_NAME_QUERY)
 
         # Commit your changes in the database
         cnx.commit()
@@ -144,7 +160,21 @@ def updateUserByName():
         editParams.add('targetName', request.form['targetName'])
         editParams.add('Name', request.form['name'])
         editParams.add('State', request.form['state'])
-        saveBasedOnName(editParams)
+        editParams.add('Salary', request.form['salary'])
+        editParams.add('Grade', request.form['grade'])
+        editParams.add('Room', request.form['room'])
+        editParams.add('Telnum', request.form['telnum'])
+        pictureFile = request.files.get('picture', '')
+        editParams.add('Keywords', request.form['keywords'])
+        saveBasedOnName(editParams, pictureFile)
+    return redirect('/')
+
+
+@app.route('/delete', methods=['POST'])
+def deleteUserByName():
+    if request.form['targetName']:
+        targetName = request.form['targetName']
+        deleteBasedOnName(targetName)
     return redirect('/')
 
 

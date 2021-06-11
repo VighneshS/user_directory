@@ -106,8 +106,12 @@
                     <td></td>
                 {% endif %}
                 <td>{{ row[7] }}</td>
-                <td><a data-id={{ row[0] }} onclick="edit(this)" data-toggle="modal" data-target="#editModal"><span
-                        class="fas fa-edit"></span></a></td>
+                <td>
+                    <a data-id={{ row[0] }} onclick="edit(this)" data-toggle="modal" data-target="#editModal">
+                        <span style="color: dodgerblue" class="fas fa-edit"></span></a>
+                    <a data-id={{ row[0] }} onclick="deleteUser(this)" data-toggle="modal" data-target="#deleteModal">
+                        <span style="color: red" class="fas fa-trash"></span></a>
+                </td>
             </tr>
         {% endfor %}
         </tbody>
@@ -121,7 +125,7 @@
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
                         class="sr-only">Close</span>
                 </button>
-                <h4 class="modal-title" id="editModalLabel">Update User</h4>
+                <h4 class="modal-title" style="position: absolute;" id="editModalLabel">Update User</h4>
             </div>
             <form role="form" method="post" action="/update">
                 <div class="modal-body">
@@ -137,10 +141,61 @@
                         <label for="editState" class="control-label">State:</label>
                         <input class="form-control" name="state" id="editState"/>
                     </div>
+                    <div class="form-group">
+                        <label for="editSalary" class="control-label">Salary:</label>
+                        <input type="number" step="1" class="form-control" name="salary" id="editSalary"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="editGrade" class="control-label">Grade:</label>
+                        <input type="number" step="1" class="form-control" name="grade" id="editGrade"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="editRoom" class="control-label">Room:</label>
+                        <input type="number" step="1" class="form-control" name="room" id="editRoom"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="editTelnum" class="control-label">Telnum:</label>
+                        <input type="number" step="1" class="form-control" name="telnum" id="editTelnum"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="editPicture" class="control-label">Picture:</label>
+                        <input type="file" accept="image/*" class="form-control" name="picture" id="editPicture"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="editKeywords" class="control-label">Keywords:</label>
+                        <input class="form-control" name="keywords" id="editKeywords"/>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                     <button type="submit" id="btnUpdate" class="btn btn-primary">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                        class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title" style="position: absolute;" id="deleteModalLabel">Delete User</h4>
+            </div>
+            <form role="form" method="post" action="/delete">
+                <div class="modal-body">
+                    <div class="form-group" style="display: none">
+                        <label for="beforeDeleteName" class="control-label">Before update Name:</label>
+                        <input type="text" class="form-control disabled" name="targetName" id="beforeDeleteName">
+                    </div>
+                    <div>Are you sure you want to delete the user <span id="userToDelete"></span>?</div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" id="btnDelete" class="btn btn-danger">Delete</button>
                 </div>
             </form>
         </div>
@@ -163,6 +218,32 @@
                 $('#beforeUpdateName').val(data[0][0]);
                 $('#editName').val(data[0][0]);
                 $('#editState').val(data[0][1]);
+                $('#editSalary').val(data[0][2]);
+                $('#editGrade').val(data[0][3]);
+                $('#editRoom').val(data[0][4]);
+                $('#editTelnum').val(data[0][5]);
+                $('#editKeywords').val(data[0][7]);
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    }
+
+    function deleteUser(elm) {
+        $.ajax({
+            url: '/getUserByName',
+            data: {
+                name: $(elm).attr('data-id')
+            },
+            type: 'POST',
+            success: function (res) {
+                // Parse the received JSON string
+                var data = JSON.parse(res);
+
+                //Populate the Pop up
+                $('#beforeDeleteName').val(data[0][0]);
+                $('#userToDelete').html(data[0][0]);
             },
             error: function (error) {
                 console.log(error);
